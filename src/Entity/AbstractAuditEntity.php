@@ -3,9 +3,6 @@ namespace FreelanceInvoice\Db\Entity;
 
 use DateTime;
 
-/**
- * @Entity
- */
 abstract class AbstractAuditEntity
 {
     /**
