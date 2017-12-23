@@ -2,9 +2,9 @@
 namespace FreelanceInvoice\Db\Entity;
 
 /**
- * @Entity @Table(name="products")
+ * @Entity @Table(name="product_categories")
  */
-class Product extends AbstractAuditEntity
+class ProductCategory extends AbstractAuditEntity
 {
     /**
      * @Id @Column(type="integer") @GeneratedValue
@@ -25,20 +25,28 @@ class Product extends AbstractAuditEntity
     protected $status;
     
     /**
-     * Many Products have Many Categories.
-     * @ManyToMany(targetEntity="ProductCategory", inversedBy="products")
-     * @JoinTable(name="products_categories_products")
+     * One Category has Many Categories.
+     * @OneToMany(targetEntity="ProductCategory", mappedBy="parent")
      */
-    private $categories;
+    private $children;
+
+    /**
+     * Many Categories have One Category.
+     * @ManyToOne(targetEntity="ProductCategory", inversedBy="children")
+     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
     
     /**
-     * @OneToOne(targetEntity="Tax")
-     * @JoinColumn(name="tax_id", referencedColumnName="tax_id")
-     **/
-    protected $tax;
+     * Many Products have Many Categories.
+     * @ManyToMany(targetEntity="Product", mappedBy="categories")
+     * @JoinTable(name="products_categories_products")
+     */
+    private $products;
     
     public function __construct() {
-        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->products = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     public function getId()
@@ -56,11 +64,6 @@ class Product extends AbstractAuditEntity
         return $this->status;
     }
     
-    public function getTax()
-    {
-        return $this->tax;
-    }
-    
     public function setName($name)
     {
         $this->name = $name;
@@ -69,10 +72,5 @@ class Product extends AbstractAuditEntity
     public function setStatus($status)
     {
         $this->status = $status;
-    }
-    
-    public function setTax($tax)
-    {
-        $this->tax = $tax;
     }
 }
